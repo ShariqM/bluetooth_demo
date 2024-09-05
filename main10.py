@@ -126,7 +126,7 @@ class BluetoothServerDelegate(NSObject):
 
     def peripheralManager_didReceiveWriteRequests_(self, peripheral, requests):
         for request in requests:
-			print (f"received request: {request}")
+            print (f"received request: {request}")
             if request.characteristic().UUID() == CBUUID.UUIDWithString_(CHARACTERISTIC_UUID):
                 self.message = str(request.value().bytes().tobytes(), 'utf-8')
                 print(f"Received write request: {self.message}")
