@@ -8,6 +8,8 @@ from Foundation import *
 from CoreBluetooth import *
 import objc
 
+import time
+
 SERVICE_UUID = "12345678-1234-5678-1234-56789abcdef0"
 CHARACTERISTIC_UUID = "87654321-4321-8765-4321-fedcba987654"
 
@@ -30,6 +32,7 @@ async def run_ble_client(address):
 
             await client.write_gatt_char(CHARACTERISTIC_UUID, b"Hello from Mac Client!")
             print("Sent: Hello from Mac Client!")
+            await asyncio.sleep(10.0)
     except Exception as e:
         print(f"Error in client: {e}")
 
@@ -51,6 +54,7 @@ async def client_main():
     assert len(devices) == 1
     print ('Connecting to addr: ', devices[0].address)
     await run_ble_client(devices[0].address)
+    time.sleep(10)
 
     return
     for d in devices:
@@ -125,8 +129,8 @@ class BluetoothServerDelegate(NSObject):
             print(f"Read request handled with {self.message}")
 
     def peripheralManager_didReceiveWriteRequests_(self, peripheral, requests):
+        print (f"received write request")
         for request in requests:
-            print (f"received request: {request}")
             if request.characteristic().UUID() == CBUUID.UUIDWithString_(CHARACTERISTIC_UUID):
                 self.message = str(request.value().bytes().tobytes(), 'utf-8')
                 print(f"Received write request: {self.message}")
