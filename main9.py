@@ -26,7 +26,8 @@ async def client_main():
     for d in devices:
         print(f"Found device: {d.name} ({d.address})")
 
-    target_address = "XX:XX:XX:XX:XX:XX"  # Replace with server's address
+    #target_address = "XX:XX:XX:XX:XX:XX"  # Replace with server's address
+    target_address = "A4:83:E7:61:24:D7"
     await run_ble_client(target_address)
 
 # Server side code (corrected)

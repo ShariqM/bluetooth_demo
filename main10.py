@@ -35,19 +35,30 @@ async def run_ble_client(address):
 
 async def client_main():
     print("Scanning for Bluetooth devices...")
-    scanner = BleakScanner(detection_callback=device_found)
+    scanner = BleakScanner(
+        detection_callback=device_found,
+        service_uuids=[SERVICE_UUID])
     await scanner.start()
     await asyncio.sleep(10.0)
     await scanner.stop()
 
-    devices = await scanner.get_discovered_devices()
+    #devices = await scanner.get_discovered_devices()
+    devices = scanner.discovered_devices
     if not devices:
         print("No devices found. Make sure the server is running and advertising.")
         return
 
+    assert len(devices) == 1
+    print ('Connecting to addr: ', devices[0].address)
+    await run_ble_client(devices[0].address)
+
+    return
     for d in devices:
+        if "F4C" in d.address:
+            breakpoint()
+        print(f"Found server device: {d.name} // {d.metadata.get('uuids', [])} // ({d.address})")
         if SERVICE_UUID.lower() in [str(uuid).lower() for uuid in d.metadata.get('uuids', [])]:
-            print(f"Found server device: {d.name} ({d.address})")
+            print(f"Found correct server device: {d.name} ({d.address})")
             await run_ble_client(d.address)
             return
 
