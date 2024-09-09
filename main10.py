@@ -10,7 +10,7 @@ import objc
 
 import time
 
-SERVICE_UUID = "12345678-1234-5678-1234-56789abcdef0"
+SERVICE_UUID = "12345678-1234-5678-1234-56789abcdef1"
 CHARACTERISTIC_UUID = "87654321-4321-8765-4321-fedcba987654"
 
 # Client side code (updated with more debugging)
@@ -27,11 +27,23 @@ async def run_ble_client(address):
         async with BleakClient(address) as client:
             print(f"Connected to: {address}")
 
-            value = await client.read_gatt_char(CHARACTERISTIC_UUID)
-            print(f"Received: {value.decode()}")
+            # services = client.get_services()
+            # for service in services:
+                # print(f"Service: {service}")
+                # for char in service.characteristics:
+                    # print(f"  - Characteristic: {char}")
 
-            await client.write_gatt_char(CHARACTERISTIC_UUID, b"Hello from Mac Client!")
-            print("Sent: Hello from Mac Client!")
+            value = await client.read_gatt_char(CHARACTERISTIC_UUID)
+            print(f"Read Initial State: {value.decode()}")
+
+            new_value = "PTA Threshold: 40dB!"
+            await client.write_gatt_char(CHARACTERISTIC_UUID,
+                new_value.encode("utf-8"), response=True)
+            print(f"Write new state: {new_value}")
+
+            value = await client.read_gatt_char(CHARACTERISTIC_UUID)
+            print(f"Confirm Read New State: {value.decode()}")
+
             await asyncio.sleep(10.0)
     except Exception as e:
         print(f"Error in client: {e}")
@@ -39,6 +51,7 @@ async def run_ble_client(address):
 async def client_main():
     print("Scanning for Bluetooth devices...")
     scanner = BleakScanner(
+        # detection_callback=device_found)
         detection_callback=device_found,
         service_uuids=[SERVICE_UUID])
     await scanner.start()
@@ -50,10 +63,16 @@ async def client_main():
     if not devices:
         print("No devices found. Make sure the server is running and advertising.")
         return
+    if True:
+        for i, device in enumerate(devices):
+            print (f"Device {i}: {device.name}"
+                f" // {device.metadata.get('uuids', [])} // ({device.address})")
 
     assert len(devices) == 1
     print ('Connecting to addr: ', devices[0].address)
-    await run_ble_client(devices[0].address)
+    # await run_ble_client(devices[0].address)
+    addr = "8C:85:90:2F:7B:A8"
+    await run_ble_client(addr)
     time.sleep(10)
 
     return
