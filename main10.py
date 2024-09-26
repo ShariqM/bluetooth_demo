@@ -55,7 +55,7 @@ async def client_main():
         detection_callback=device_found,
         service_uuids=[SERVICE_UUID])
     await scanner.start()
-    await asyncio.sleep(10.0)
+    await asyncio.sleep(20.0)
     await scanner.stop()
 
     #devices = await scanner.get_discovered_devices()
