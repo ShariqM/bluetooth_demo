@@ -3,6 +3,9 @@ import matplotlib
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from functools import partial
 
+import matplotlib as mpl
+mpl.rcParams['figure.dpi'] = 50
+
 import tkinter as tk
 import numpy as np
 
